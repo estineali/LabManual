@@ -1641,7 +1641,7 @@ struct MyString
 	}
 	
 	// copy constructor
-	MyString(MyString& const rhs)
+	MyString(const MyString& rhs)
 	{
 		size=rhs.size;
 		str=new char[size+1];
@@ -1752,10 +1752,10 @@ If you do not declare a constructor or destructor in an object, the C++ standard
 \framebox(400,150){}\\
 
 \chapterimage{chapter_head_2.pdf} % Chapter heading image
-\chapter{Stacks \hspace{76mm} {\textsc{\small SCRIPTED BY : HAMZA MASROOR}}}
+\chapter{Stacks and Double Linked List\hspace{4mm} {\textsc{\small SCRIPTED BY: HAMZA MASROOR}}}
 \section{Objective}\index{Objective}
-In this lab, we'll learn about a data structure, called Stack. We'll learn about its implementation, operations and uses.
-\section{Description}\index{Description}
+In this lab, we'll learn about two data structures, called Stack and Double linked List. We'll learn about their implementation, operations and uses.
+\section{Stack Description}\index{Description}
 Stack is a linear data structure which follows a particular order in which the operations are performed. The order may be LIFO (Last In First Out) or FILO (First In Last Out).\\ ~\\
 Mainly the following three basic operations are performed in the stack:
 \begin{itemize}
@@ -2019,6 +2019,415 @@ The loop gets stopped now because the temp is now set to NULL.
 	\caption{Updating the temp pointer to the third node and outputs the value}
 \end{figure}
 \end{example}
+
+\section{Double Linked List Description}\index{Description}
+Double linked list is a sequence of elements in which every element has links to its previous element and next element in the sequence.
+It has the same operations as the single-linked list, but the operations takes less time as there are shorter traversals using links to both next and previous element. We'll see it in the examples below.
+
+\subsection{Real-life examples of Double linked list}
+There are many real life examples of stack. Consider the simple example of a music player. The music player allows skipping to both next and previous song in the playlist. Moreover, it allows to traverse through the list to find a song using both next and previous buttons.
+
+\subsection{Time Complexities of Double linked list}
+Append(data) - O(1) time \\
+Add(i, data) - O(min(i, n - i))\\
+Remove(i) - O(min(i, n - i))\\ 
+Where i is the index and n is the size of the list.\\ \\
+For add and remove, we have to find the node at the index where a node is getting added or removed. Finding the node with a particular index in a DLList is easy; we can either start at the head of the list and work forward ,or start at the tail of the list and work backward. This allows us to reach the ith node in O(min(i,n - i)) time.
+
+\subsection{Applications of Double linked list}
+There are many possible applications of stack. Some are listed below:
+\begin{itemize}
+	\item The browser cache which allows you to hit the BACK buttons (a linked list of URLs).
+	\item Applications that have a Most Recently Used (MRU) list (a linked list of file names).
+	\item A stack, hash table, and binary tree can be implemented using a doubly linked list. 
+	\item Undo functionality in Photoshop or Word (a linked list of state).
+\end{itemize}
+
+\section{Implementation}
+We will be implementing a double linked list. In double linked list, we have nodes linked to each other.
+Each node stores a data and links to the node next to and previous to it.
+\begin{figure}[H]
+	\centering
+	\includegraphics{DLNode.jpeg}
+	\caption{Representation of node}
+\end{figure}
+\paragraph{Implementing Node}
+To implement node, we will be making a struct to hold data and the links to store next and previous node . In this implementation we are making a node to store integer type data. However, it can be implemented to store any data type or object.
+\begin{lstlisting}
+struct Node
+{
+	int data;
+	Node* next;
+	Node* prev;
+	Node()
+	{
+		next = NULL;
+		prev = NULL;
+	}
+};
+\end{lstlisting}
+\paragraph{Initializing the Double linked list}
+As a Double linked consists of many nodes, we should have many nodes inside our DLList class, but we will have only two nodes, "head" and "tail", which will act as reference nodes and allows us to iterate through all the nodes in the DLList. Moreover, we will include an integer "length" to keep track of the size of the list.
+\begin{lstlisting}
+class DLList
+{
+private:
+	int length;
+	Node* head;
+	Node* tail;
+public:
+	DLList()
+	{
+		head = NULL;
+		tail = NULL:
+	}
+};
+\end{lstlisting}
+Our stack now consists of Node pointers which will hold the addresses of the head and the tail. To initialize, both are set to \textbf{NULL}, as the list is empty.
+\begin{figure}[H]
+	\centering
+	\includegraphics{DLList1.jpeg}
+	\caption{DLList head pointer}
+\end{figure}
+\begin{figure}[H]
+	\centering
+	\includegraphics{DLList2.jpeg}
+	\caption{DLList tail pointer}
+\end{figure}
+\paragraph{Implementing Append operation}
+Inside the class of DLList, we will declare and define a function "Append(int data)" in public.
+\begin{lstlisting}
+void Append(int data)
+{
+	if (length == 0)
+	{
+		head = tail = new Node();
+		head->data = data;
+	}
+	else
+	{
+		tail->next = new Node();
+		tail->next->prev = tail;
+		tail = tail->next;
+		tail->data = data;
+	}
+	length++;
+}
+
+\end{lstlisting}
+\begin{example}
+	Let's visualize an example Append() operation\\
+	\begin{lstlisting}
+	DLList lst;
+	lst.Append(6);
+	\end{lstlisting}
+	Since the DLList is empty and head is set to NULL. Body of 'if' will be executed.\\
+	It first creates a new node and sets head and tail to it.\\
+	\begin{figure}[H]
+		\centering
+		\includegraphics[scale=0.5]{DLList3.jpeg}
+		\caption{Creating new node}
+	\end{figure}
+	~\\
+	Then it sets its data to the data passed.
+	\begin{figure}[H]
+		\centering
+		\includegraphics[scale=0.5]{DLList5-set.jpeg}
+		\caption{Setting data}
+	\end{figure}
+\end{example}
+Since, length is not '0', Append operation will now execute body of 'else'. Let's see an example
+\begin{example}
+	\begin{lstlisting}
+	lst.append(9);
+	\end{lstlisting}
+	It will first create a new node and sets tail's next to it.
+	\begin{figure}[H]
+		\centering
+		\includegraphics[scale=0.5]{DLList4.jpeg}
+		\caption{Creating new node}
+	\end{figure} ~\\
+	Then it sets the new node's prev to the tail
+	\begin{figure}[H]
+		\centering
+		\includegraphics[scale=0.5]{DLList5.jpeg}
+		\caption{Setting new node's pointer}
+	\end{figure}
+	It now updates the tail and sets data.
+	\begin{figure}[H]
+		\centering
+		\includegraphics[scale=0.5]{DLList6.jpeg}
+		\caption{Updating tail and data}
+	\end{figure}
+	'9' is added succesfully.
+	{\begin{figure}[H]
+			\centering
+			\includegraphics[scale=0.5]{DLList7.jpeg}
+			\caption{Succesful Append(9) operation}
+	\end{figure}}
+\end{example}
+
+\paragraph{Implementing Add operation}
+Inside the class of DLList, we will declare and define a function "Append(int data)" in public.
+\begin{lstlisting}
+void Add(int i, int data)
+{
+	if(i >= 0 && i <= length)
+	{
+	if (i == 0)
+	{
+		if (length == 0)
+		{
+			head = tail = new Node();
+			head->data = data;
+		}
+		else
+		{
+			head->prev = new Node;
+			head->prev->next = head;
+			head = head->prev;
+			head->data = data;
+		}
+	
+	}
+	else if (i == length)
+	{
+	tail->next = new Node();
+	tail->next->prev = tail;
+	tail = tail->next;
+	tail->data = data;
+	}
+	else
+	{
+		Node* temp;
+		if (i <= length/2)
+		{
+			temp = head;
+			for (int j = 0; j < i; j++)
+			{
+				temp=temp->next;
+			}
+		}	
+		else
+		{
+			temp = tail;
+			for (int j = 0; j < length-i-1; j++)
+			{
+				temp = temp->prev;
+			}
+		}
+		
+		Node* newNode = new Node;
+		newNode->data = data;
+		newNode->prev = temp->prev;
+		newNode->next = temp;
+		temp->prev->next = newNode;
+		temp->prev = newNode;
+	
+		}
+		length++;
+	}
+	else
+	{
+		cout << "Index is out of range" << endl;
+	}
+}
+
+\end{lstlisting}
+\begin{example}
+	Let's visualize an example Add() operation\\
+	\begin{lstlisting}
+	DLList lst;
+	lst.Add(0,6);
+	\end{lstlisting}
+	Since the DLList is empty, Body of 'if (i == 0) and if (length == 0)' will be executed.\\
+	It will carry out the same operations carried out in Append function.\\
+	It first creates a new node and sets head and tail to it.\\
+	\begin{figure}[H]
+		\centering
+		\includegraphics[scale=0.5]{DLList3.jpeg}
+		\caption{Creating new node}
+	\end{figure}
+	~\\
+	Then it sets its data to the data passed.
+	\begin{figure}[H]
+		\centering
+		\includegraphics[scale=0.5]{DLList5-set.jpeg}
+		\caption{Setting data}
+	\end{figure}
+\end{example}
+If a number is added to the last, it will then also do the same tasks as append.\\
+
+\begin{example}
+	\begin{lstlisting}
+	lst.Add(1,9);
+	\end{lstlisting}
+	Now length is not 0 and index is equal to the length.\\
+	It will first create a new node and sets tail's next to it.
+	\begin{figure}[H]
+		\centering
+		\includegraphics[scale=0.5]{DLList4-add.jpg}
+		\caption{Creating new node}
+	\end{figure} ~\\
+	Then it sets the new node's prev to the tail
+	\begin{figure}[H]
+		\centering
+		\includegraphics[scale=0.5]{DLList5-add.jpg}
+		\caption{Setting new node's pointer}
+	\end{figure}
+	It now updates the tail and sets data.
+	\begin{figure}[H]
+		\centering
+		\includegraphics[scale=0.5]{DLList6-add.jpg}
+		\caption{Updating tail and data}
+	\end{figure}
+	'9' is added succesfully.
+	{\begin{figure}[H]
+			\centering
+			\includegraphics[scale=0.5]{DLList7-add.jpg}
+			\caption{Succesful Add(1,9) operation}
+	\end{figure}}
+\end{example}
+\begin{example}
+	Let's look at an example, when index is neither 0 nor equal to the length.
+	Let's visualize an example Add() operation\\
+	\begin{lstlisting}
+	lst.Add(1,5);
+	\end{lstlisting}
+	Since i is less than half of the length, it will iterate from the head.\\
+	It will first create a temporary pointer and point it to head.
+	\begin{figure}[H]
+		\centering
+		\includegraphics[scale=0.5]{DLAdd1.jpg}
+		\caption{Creating a temporary pointer}
+	\end{figure} ~\\
+	It will iterate till it reaches the index where a new node is to be added.
+	\begin{figure}[H]
+		\centering
+		\includegraphics[scale=0.5]{DLAdd2.jpg}
+		\caption{Iterating till it reaches the node}
+	\end{figure}
+	It will create a new Node.
+	\begin{figure}[H]
+		\centering
+		\includegraphics[scale=0.5]{DLAdd3.jpg}
+		\caption{Creating new node}
+	\end{figure}
+	Points its 'prev' pointer to the temp's 'prev'.
+	\begin{figure}[H]
+		\centering
+		\includegraphics[scale=0.5]{DLAdd4.jpg}
+		\caption{Setting node's prev pointer}
+	\end{figure}~\\
+	Points its 'next' pointer to temp.
+	\begin{figure}[H]
+		\centering
+		\includegraphics[scale=0.5]{DLAdd5.jpg}
+		\caption{Setting node's next pointer}
+	\end{figure}
+	Point Node's prev's next pointer to itself.
+	\begin{figure}[H]
+		\centering
+		\includegraphics[scale=0.5]{DLAdd5(1).jpg}
+		\caption{Setting the previous node's next pointer}
+	\end{figure}
+	And finally temp's prev to the new node.
+	\begin{figure}[H]
+		\centering
+		\includegraphics[scale=0.5]{DLAdd6.jpg}
+		\caption{Succesful addition}
+	\end{figure}
+\end{example}
+\begin{example}
+	Now, let's see an example where index is greater than the half of the length of the list.\\
+	\begin{lstlisting}
+	lst.Add(2,13);
+	\end{lstlisting}
+	Since index is greater than the half of the length, it will start iteration from the last.\\
+	It will first create a temporary pointer and sets it to the tail.
+	\begin{figure}[H]
+		\centering
+		\includegraphics[scale=0.5]{DLAdd7.jpg}
+		\caption{Creating a temporary pointer}
+	\end{figure}
+	It will iterate till it reaches the index where the new node has to be added
+	\begin{figure}[H]
+		\centering
+		\includegraphics[scale=0.5]{DLAdd8.jpg}
+		\caption{Iterated till the index}
+	\end{figure}
+	Now it repeats the same process of setting pointers as it did above and adds the new node succesfully.
+	\begin{figure}[H]
+		\centering
+		\includegraphics[scale=0.5]{DLAdd10.jpg}
+		\caption{Succesful Add(2,13) operation}
+	\end{figure}
+\end{example}
+Let's see an example when the length is not '0' and the node is to be added at index '0'.
+\begin{example}
+	\begin{lstlisting}
+	lst.Add(0,4);
+	\end{lstlisting}
+	It will first create a new node and sets the prev's pointer, of the node pointed by head, to it.
+	\begin{figure}[H]
+		\centering
+		\includegraphics[scale=0.5]{DLAdd11.jpg}
+		\caption{Creating new node and setting head's prev}
+	\end{figure}~\\
+	Then it sets new node's next to the next of node pointed by head.
+	\begin{figure}[H]
+		\centering
+		\includegraphics[scale=0.5]{DLAdd12.jpg}
+		\caption{Setting node's next pointer}
+	\end{figure}~\\
+	Finally, head is set to the new node and the node is added succesfully.
+	\begin{figure}[H]
+		\centering
+		\includegraphics[scale=0.5]{DLAdd13.jpg}
+		\caption{Updating head}
+	\end{figure}
+\end{example}
+\paragraph{Implementing Show() function}
+The Show()  function allows to output all the values in the DLList. \\
+Inside the class of DLList, we will declare and define a function "void Show()" in public.
+\begin{lstlisting}
+void Show()
+{
+	Node* temp = head;
+	while(temp!=NULL)
+	{
+		std::cout<<temp->data<<std::endl;
+		temp = temp->next;
+	}
+}
+\end{lstlisting}
+
+\noindent Let's visualize an example of Show() operation
+\begin{example}
+	\begin{lstlisting}
+	lst.Show();
+	\end{lstlisting}~\\
+	It creates a temp pointer and is pointed to the node pointed by head. It also outputs its value
+	\begin{figure}[H]
+		\centering
+		\includegraphics[scale=0.5]{DLShow1.jpg}
+		\caption{Creating temp pointer and outputting first value}
+	\end{figure} ~\\
+	It updates the temp pointer and moves to the next node. Then it outputs the value of the node pointed by temp.
+	\begin{figure}[H]
+		\centering
+		\includegraphics[scale=0.5]{DLShow2.jpg}
+		\caption{Outputting second value}
+	\end{figure}
+	
+	And finally it moves to the last node, outputs its value and since it's next is equal to NULL, the loop is ended.
+	\begin{figure}[H]
+		\centering
+		\includegraphics[scale=0.5]{DLShow3.jpg}
+		\caption{Outputting third value}
+	\end{figure} ~\\
+\end{example}
+
 \newpage
  \section{Problems}\index{Problems}
  \begin{problem}
@@ -2037,6 +2446,24 @@ The loop gets stopped now because the temp is now set to NULL.
 			\item For Bottom() function, think how to iterate over the stack till the bottom using only head pointer and a temporary pointer.
 		\end{itemize}
 \end{problem}
+~\\
+\begin{problem}
+	Implement the Remove(int index) function in your DLList class. The function should remove the element from the given index and returns the removed element. The function should run in O(min(i, n - i)).
+	\paragraph{Instructions}
+	\begin{itemize}
+		\item Think for all special cases such as, removal at zero index and removal at last index.
+		\item Update pointers carefully.
+		\item Try to take an idea from given Add() function for traversal.
+	\end{itemize}
+\end{problem}
+~\\
+\begin{problem}
+	Implement the function Reverse() which reverses the list, without making a new list.
+	\paragraph{Instructions}
+	\begin{itemize}
+		\item Traverse through the whole list and update its pointers accordingly
+	\end{itemize}
+\end{problem}
 
 \newpage
  \section{Student Feedback}
@@ -2053,7 +2480,7 @@ The loop gets stopped now because the temp is now set to NULL.
 
 \chapterimage{chapter_head_2.pdf} % Chapter heading image
 
-\chapter{Inheritance \hspace{65mm} {\textsc{\small SCRIPTED BY : NABIHA SHAHID}}}
+\chapter{Inheritance and Abstract class\hspace{4mm} {\textsc{\small SCRIPTED BY: NABIHA SHAHID AND HAMZA MASROOR}}}
 
 \section{What Is Inheritance?}\index{What Is Inheritance?}
 
@@ -2170,34 +2597,7 @@ class privateDerived: private base
 \item \textbf{Private Inheritance} \\
 	When deriving from a private base class, public and protected members of the base class become private members of the derived class. 
 \end{itemize}
-\newpage
-\section{Problems} \index{Problems}
-\begin{problem}
-Your code should represent a program that defines a class $shape$ carrying a constructor mentioning the width and height. After that define two sub-classes $triangle$ and $rectangle$ , inherit them from the base class shape and calculate the area of the shape $area()$.In the main, define two variables a triangle and a rectangle and then call the $area()$ function in these two varibles.\\
-\end{problem}
-\begin{problem}
-Write a program with a base class and an inherited class.Both of them should have a method void $display()$ that prints a separate message for both. In the main define a variable for the inherited class and call the $display()$ method on it.\\
-\end{problem}
-\begin{problem}
-Write a probram with a base class $animal$. Inside it define a name and an age variables, and $setvalue()$ function. Then create two bases variables Dog and Dolphin which write a message telling the age, the name and giving some extra information like color or breed.
-\end{problem}
 
- \newpage
- \section{Student Feedback}
- \textbf{What did you learn from this lab?}\\ 
- \framebox(400,150){}\\
- \textbf{What part of the lab is still unclear to you?}\\
- \framebox(400,150){}\\
- \textbf{What can be improved in this lab?}\\ 
- \framebox(400,150){}\\
-
-\newpage
-%------------------------------------------------
-\chapterimage{chapter_head_2.pdf} % Chapter heading image
-
-\chapter{Abstract classes \hspace{44mm} {\textsc{\small SCRIPTED BY : HAMZA MASROOR}}}
-\section{Objective}
-In this lab, we will learn about a type of class called abstract classes and its usage and implementation.
 \section{Description}
 \begin{figure}[h]
 	\centering
@@ -2210,77 +2610,87 @@ A \textbf{pure virtual function} (or abstract function) in C++ is a virtual func
 // An abstract class
 class Test
 {   
-	// Data members of class
-	public:
-	// Pure Virtual Function
-	virtual void show() = 0;
+// Data members of class
+public:
+// Pure Virtual Function
+virtual void show() = 0;
 
-	/* Other members */
+/* Other members */
 };
 \end{lstlisting} ~\\
 Let's see an example in whch a pure virtual function is declared in the abstract class and then defined in the derived class.
 \begin{example}
-\begin{lstlisting}
-class Base
-{
+	\begin{lstlisting}
+	class Base
+	{
 	int x;
 	public:
-		virtual void func() = 0;
-		int getX() 
-		{
-			return x; 
-		}
-};
-
-// This class inherits from Base and implements func()
-class Derived: public Base
-{
+	virtual void func() = 0;
+	int getX() 
+	{
+	return x; 
+	}
+	};
+	
+	// This class inherits from Base and implements func()
+	class Derived: public Base
+	{
 	int y;
 	public:
-		void func()
-		{
-			cout << "func() called";
-		}
-};
-
-int main()
-{
+	void func()
+	{
+	cout << "func() called";
+	}
+	};
+	
+	int main()
+	{
 	Derived d;
 	d.func();
 	return 0;
-}
-\end{lstlisting}
-Now the abstract class has the attribute 'int x' and the function 'int GetX()'. This function will also be the part of derived class and is already defined in the base class. Now the function 'func()' is a pure virtual function which is defined in the base class and is implemented in the derived class. Now, if we create an instance of Derived class, we can access the functions 'GetX()' and 'func()'. The 'GetX()' will be called through the base class and 'func()' will be called through the derived class.
-The program above will output:
-\begin{figure}[h]
-	\centering
-	\includegraphics[scale=0.5]{Class.png}
-	\caption{Output of implemented pure virtual function}
-\end{figure}
+	}
+	\end{lstlisting}
+	Now the abstract class has the attribute 'int x' and the function 'int GetX()'. This function will also be the part of derived class and is already defined in the base class. Now the function 'func()' is a pure virtual function which is defined in the base class and is implemented in the derived class. Now, if we create an instance of Derived class, we can access the functions 'GetX()' and 'func()'. The 'GetX()' will be called through the base class and 'func()' will be called through the derived class.
+	The program above will output:
+	\begin{figure}[h]
+		\centering
+		\includegraphics[scale=0.5]{Class.png}
+		\caption{Output of implemented pure virtual function}
+	\end{figure}
 \end{example}
 The derived class can also become an abstract class if the pure virtual function declared in base class is not defined in the derived class.
 \begin{example}
-\begin{lstlisting}
-class Base
-{
+	\begin{lstlisting}
+	class Base
+	{
 	public:
 	virtual void show() = 0;
-};
-
-class Derived : public Base { };
-
-int main(void)
-{
+	};
+	
+	class Derived : public Base { };
+	
+	int main(void)
+	{
 	Derived d;
 	return 0;
-}
-\end{lstlisting}
+	}
+	\end{lstlisting}
 \end{example}
 \begin{corollary}[Interface vs Abstract classes]
-An interface does not have implementation of any of its methods, it can be considered as a collection of method declarations. In C++, an interface can be simulated by making all methods as pure virtual. In Java, there is a separate keyword for interface.
+	An interface does not have implementation of any of its methods, it can be considered as a collection of method declarations. In C++, an interface can be simulated by making all methods as pure virtual. In Java, there is a separate keyword for interface.
 \end{corollary}
+
 \newpage
-\section{Problems}\index{Problems}
+\section{Problems} \index{Problems}
+\begin{problem}
+Your code should represent a program that defines a class $shape$ carrying a constructor mentioning the width and height. After that define two sub-classes $triangle$ and $rectangle$ , inherit them from the base class shape and calculate the area of the shape $area()$.In the main, define two variables a triangle and a rectangle and then call the $area()$ function in these two varibles.\\
+\end{problem}
+\begin{problem}
+Write a program with a base class and an inherited class.Both of them should have a method void $display()$ that prints a separate message for both. In the main define a variable for the inherited class and call the $display()$ method on it.\\
+\end{problem}
+\begin{problem}
+Write a probram with a base class $animal$. Inside it define a name and an age variables, and $setvalue()$ function. Then create two bases variables Dog and Dolphin which write a message telling the age, the name and giving some extra information like color or breed.
+\end{problem}~\\
 \begin{problem}
 	Make an abstract class of Shape with pure virtual function to calculate area. It should also have the attributes for the position of the Shape. The derived classes should be Square, Circle, Trapezium and Rectangle. All derived classes should implement the pure virtual function defined in the base class. 
 	\paragraph{Instructions}
@@ -2292,448 +2702,6 @@ An interface does not have implementation of any of its methods, it can be consi
 \begin{problem}
 	Make a base class with a pure virtual function. Derive a class from it and declare another pure virtual function in the derived class. Then derive an other class from the first derived class and declare a pure virtual function in it too. And then lastly derive another class from the second derived class, and define all the pure virtual functions in it
 \end{problem}
-
- \newpage
- \section{Student Feedback}\index{Student Feedback}
- \textbf{What did you learn from this lab?}\\ 
- \framebox(400,150){}\\
- \textbf{What part of the lab is still unclear to you?}\\
- \framebox(400,150){}\\
- \textbf{What can be improved in this lab?}\\ 
- \framebox(400,150){}\\
-
-\newpage
-\chapterimage{chapter_head_2.pdf} % Chapter heading image
-\chapter{Double-linked list \hspace{40mm} {\textsc{\small SCRIPTED BY : HAMZA MASROOR}}}
-\section{Objective}\index{Objective}
-In this lab, we'll learn about a data structure, called Double linked list. We'll learn about its implementation, operations and uses.
-\section{Description}\index{Description}
-Double linked list is a sequence of elements in which every element has links to its previous element and next element in the sequence.
-It has the same operations as the single-linked list, but the operations takes less time as there are shorter traversals using links to both next and previous element. We'll see it in the examples below.
- 
-\subsection{Real-life examples of Double linked list}
-There are many real life examples of stack. Consider the simple example of a music player. The music player allows skipping to both next and previous song in the playlist. Moreover, it allows to traverse through the list to find a song using both next and previous buttons.
-
-\subsection{Time Complexities of Double linked list}
-Append(data) - O(1) time \\
-Add(i, data) - O(min(i, n - i))\\
-Remove(i) - O(min(i, n - i))\\ 
-Where i is the index and n is the size of the list.\\ \\
-For add and remove, we have to find the node at the index where a node is getting added or removed. Finding the node with a particular index in a DLList is easy; we can either start at the head of the list and work forward ,or start at the tail of the list and work backward. This allows us to reach the ith node in O(min(i,n - i)) time.
- 
-\subsection{Applications of Double linked list}
-There are many possible applications of stack. Some are listed below:
-\begin{itemize}
-	\item The browser cache which allows you to hit the BACK buttons (a linked list of URLs).
-	\item Applications that have a Most Recently Used (MRU) list (a linked list of file names).
-	\item A stack, hash table, and binary tree can be implemented using a doubly linked list. 
-	\item Undo functionality in Photoshop or Word (a linked list of state).
-\end{itemize}
-
-\section{Implementation}
-We will be implementing a double linked list. In double linked list, we have nodes linked to each other.
-Each node stores a data and links to the node next to and previous to it.
-\begin{figure}[H]
-	\centering
-	\includegraphics{DLNode.jpeg}
-	\caption{Representation of node}
-\end{figure}
-\paragraph{Implementing Node}
-To implement node, we will be making a struct to hold data and the links to store next and previous node . In this implementation we are making a node to store integer type data. However, it can be implemented to store any data type or object.
-\begin{lstlisting}
-struct Node
-{
-	int data;
-	Node* next;
-	Node* prev;
-	Node()
-	{
-		next = NULL;
-		prev = NULL;
-	}
-};
-\end{lstlisting}
-\paragraph{Initializing the Double linked list}
-As a Double linked consists of many nodes, we should have many nodes inside our DLList class, but we will have only two nodes, "head" and "tail", which will act as reference nodes and allows us to iterate through all the nodes in the DLList. Moreover, we will include an integer "length" to keep track of the size of the list.
-\begin{lstlisting}
-class DLList
-{
-	private:
-		int length;
-		Node* head;
-		Node* tail;
-	public:
-		DLList()
-		{
-			head = NULL;
-			tail = NULL:
-		}
-}
-\end{lstlisting}
-Our stack now consists of Node pointers which will hold the addresses of the head and the tail. To initialize, both are set to \textbf{NULL}, as the list is empty.
-\begin{figure}[H]
-	\centering
-	\includegraphics{DLList1.jpeg}
-	\caption{DLList head pointer}
-\end{figure}
-\begin{figure}[H]
-	\centering
-	\includegraphics{DLList2.jpeg}
-	\caption{DLList tail pointer}
-\end{figure}
-\paragraph{Implementing Append operation}
-Inside the class of DLList, we will declare and define a function "Append(int data)" in public.
-\begin{lstlisting}
-void Append(int data)
-{
-	if (length == 0)
-	{
-		head = tail = new Node();
-		head->data = data;
-	}
-	else
-	{
-		tail->next = new Node();
-		tail->next->prev = tail;
-		tail = tail->next;
-		tail->data = data;
-	}
-	length++;
-}
-
-\end{lstlisting}
-\begin{example}
-	Let's visualize an example Append() operation\\
-	\begin{lstlisting}
-	DLList lst;
-	lst.Append(6);
-	\end{lstlisting}
-	Since the DLList is empty and head is set to NULL. Body of 'if' will be executed.\\
-	It first creates a new node and sets head and tail to it.\\
-	\begin{figure}[H]
-		\centering
-		\includegraphics[scale=0.5]{DLList3.jpeg}
-		\caption{Creating new node}
-	\end{figure}
-	~\\
-	Then it sets its data to the data passed.
-	\begin{figure}[H]
-		\centering
-		\includegraphics[scale=0.5]{DLList5-set.jpeg}
-		\caption{Setting data}
-	\end{figure}
-\end{example}
-Since, length is not '0', Append operation will now execute body of 'else'. Let's see an example
-\begin{example}
-	\begin{lstlisting}
-	lst.append(9);
-	\end{lstlisting}
-	It will first create a new node and sets tail's next to it.
-	\begin{figure}[H]
-		\centering
-		\includegraphics[scale=0.5]{DLList4.jpeg}
-		\caption{Creating new node}
-	\end{figure} ~\\
-	Then it sets the new node's prev to the tail
-	\begin{figure}[H]
-		\centering
-		\includegraphics[scale=0.5]{DLList5.jpeg}
-		\caption{Setting new node's pointer}
-	\end{figure}
-	It now updates the tail and sets data.
-	\begin{figure}[H]
-		\centering
-		\includegraphics[scale=0.5]{DLList6.jpeg}
-		\caption{Updating tail and data}
-	\end{figure}
-		'9' is added succesfully.
-	{\begin{figure}[H]
-			\centering
-			\includegraphics[scale=0.5]{DLList7.jpeg}
-			\caption{Succesful Append(9) operation}
-	\end{figure}}
-\end{example}
-
-\paragraph{Implementing Add operation}
-Inside the class of DLList, we will declare and define a function "Append(int data)" in public.
-\begin{lstlisting}
-void Add(int i, int data)
-{
-	if(i >= 0 && i <= length)
-	{
-		if (i == 0)
-		{
-			if (length == 0)
-			{
-				head = tail = new Node();
-				head->data = data;
-			}
-			else
-			{
-				head->prev = new Node;
-				head->prev->next = head;
-				head = head->prev;
-				head->data = data;
-			}
-			
-		}
-		else if (i == length)
-		{
-			tail->next = new Node();
-			tail->next->prev = tail;
-			tail = tail->next;
-			tail->data = data;
-		}
-		else
-		{
-			Node* temp;
-			if (i <= length/2)
-			{
-				temp = head;
-				for (int j = 0; j < i; j++)
-				{
-					temp=temp->next;
-				}
-			}	
-			else
-			{
-				temp = tail;
-				for (int j = 0; j < length-i-1; j++)
-				{
-					temp = temp->prev;
-				}
-			}
-		
-			Node* newNode = new Node;
-			newNode->data = data;
-			newNode->prev = temp->prev;
-			newNode->next = temp;
-			temp->prev->next = newNode;
-			temp->prev = newNode;
-			
-		}
-		length++;
-	}
-	else
-	{
-		cout << "Index is out of range" << endl;
-	}
-}
-
-\end{lstlisting}
-\begin{example}
-	Let's visualize an example Add() operation\\
-	\begin{lstlisting}
-	DLList lst;
-	lst.Add(0,6);
-	\end{lstlisting}
-	Since the DLList is empty, Body of 'if (i == 0) and if (length == 0)' will be executed.\\
-	It will carry out the same operations carried out in Append function.\\
-	It first creates a new node and sets head and tail to it.\\
-	\begin{figure}[H]
-		\centering
-		\includegraphics[scale=0.5]{DLList3.jpeg}
-		\caption{Creating new node}
-	\end{figure}
-	~\\
-	Then it sets its data to the data passed.
-	\begin{figure}[H]
-		\centering
-		\includegraphics[scale=0.5]{DLList5-set.jpeg}
-		\caption{Setting data}
-	\end{figure}
-\end{example}
-If a number is added to the last, it will then also do the same tasks as append.\\
-
-\begin{example}
-	\begin{lstlisting}
-	lst.Add(1,9);
-	\end{lstlisting}
-	Now length is not 0 and index is equal to the length.\\
-	It will first create a new node and sets tail's next to it.
-	\begin{figure}[H]
-		\centering
-		\includegraphics[scale=0.5]{DLList4-add.jpg}
-		\caption{Creating new node}
-	\end{figure} ~\\
-	Then it sets the new node's prev to the tail
-	\begin{figure}[H]
-		\centering
-		\includegraphics[scale=0.5]{DLList5-add.jpg}
-		\caption{Setting new node's pointer}
-	\end{figure}
-	It now updates the tail and sets data.
-	\begin{figure}[H]
-		\centering
-		\includegraphics[scale=0.5]{DLList6-add.jpg}
-		\caption{Updating tail and data}
-	\end{figure}
-	'9' is added succesfully.
-	{\begin{figure}[H]
-			\centering
-			\includegraphics[scale=0.5]{DLList7-add.jpg}
-			\caption{Succesful Add(1,9) operation}
-	\end{figure}}
-\end{example}
-\begin{example}
-Let's look at an example, when index is neither 0 nor equal to the length.
-Let's visualize an example Add() operation\\
-\begin{lstlisting}
-lst.Add(1,5);
-\end{lstlisting}
-Since i is less than half of the length, it will iterate from the head.\\
-It will first create a temporary pointer and point it to head.
-\begin{figure}[H]
-	\centering
-	\includegraphics[scale=0.5]{DLAdd1.jpg}
-	\caption{Creating a temporary pointer}
-\end{figure} ~\\
-It will iterate till it reaches the index where a new node is to be added.
-\begin{figure}[H]
-	\centering
-	\includegraphics[scale=0.5]{DLAdd2.jpg}
-	\caption{Iterating till it reaches the node}
-\end{figure}
-It will create a new Node.
-\begin{figure}[H]
-	\centering
-	\includegraphics[scale=0.5]{DLAdd3.jpg}
-	\caption{Creating new node}
-\end{figure}
-Points its 'prev' pointer to the temp's 'prev'.
-\begin{figure}[H]
-	\centering
-	\includegraphics[scale=0.5]{DLAdd4.jpg}
-	\caption{Setting node's prev pointer}
-\end{figure}~\\
-Points its 'next' pointer to temp.
-\begin{figure}[H]
-	\centering
-	\includegraphics[scale=0.5]{DLAdd5.jpg}
-	\caption{Setting node's next pointer}
-\end{figure}
-Point Node's prev's next pointer to itself.
-\begin{figure}[H]
-	\centering
-	\includegraphics[scale=0.5]{DLAdd5(1).jpg}
-	\caption{Setting the previous node's next pointer}
-\end{figure}
-And finally temp's prev to the new node.
-\begin{figure}[H]
-	\centering
-	\includegraphics[scale=0.5]{DLAdd6.jpg}
-	\caption{Succesful addition}
-\end{figure}
-\end{example}
-\begin{example}
-Now, let's see an example where index is greater than the half of the length of the list.\\
-\begin{lstlisting}
-lst.Add(2,13);
-\end{lstlisting}
-Since index is greater than the half of the length, it will start iteration from the last.\\
-It will first create a temporary pointer and sets it to the tail.
-\begin{figure}[H]
-	\centering
-	\includegraphics[scale=0.5]{DLAdd7.jpg}
-	\caption{Creating a temporary pointer}
-\end{figure}
-It will iterate till it reaches the index where the new node has to be added
-\begin{figure}[H]
-	\centering
-	\includegraphics[scale=0.5]{DLAdd8.jpg}
-	\caption{Iterated till the index}
-\end{figure}
-Now it repeats the same process of setting pointers as it did above and adds the new node succesfully.
-\begin{figure}[H]
-	\centering
-	\includegraphics[scale=0.5]{DLAdd10.jpg}
-	\caption{Succesful Add(2,13) operation}
-\end{figure}
-\end{example}
-Let's see an example when the length is not '0' and the node is to be added at index '0'.
-\begin{example}
-	\begin{lstlisting}
-	lst.Add(0,4);
-	\end{lstlisting}
-It will first create a new node and sets the prev's pointer, of the node pointed by head, to it.
-\begin{figure}[H]
-	\centering
-	\includegraphics[scale=0.5]{DLAdd11.jpg}
-	\caption{Creating new node and setting head's prev}
-\end{figure}~\\
-Then it sets new node's next to the next of node pointed by head.
-\begin{figure}[H]
-	\centering
-	\includegraphics[scale=0.5]{DLAdd12.jpg}
-	\caption{Setting node's next pointer}
-\end{figure}~\\
-Finally, head is set to the new node and the node is added succesfully.
-\begin{figure}[H]
-	\centering
-	\includegraphics[scale=0.5]{DLAdd13.jpg}
-	\caption{Updating head}
-\end{figure}
-\end{example}
-\paragraph{Implementing Show() function}
-The Show()  function allows to output all the values in the DLList. \\
-Inside the class of DLList, we will declare and define a function "void Show()" in public.
-\begin{lstlisting}
-void Show()
-{
-	Node* temp = head;
-	while(temp!=NULL)
-	{
-		std::cout<<temp->data<<std::endl;
-		temp = temp->next;
-	}
-}
-\end{lstlisting}
-\newpage
-Let's visualize an example of Show() operation
-\begin{example}
-	\begin{lstlisting}
-lst.Show();
-	\end{lstlisting}~\\
-It creates a temp pointer and is pointed to the node pointed by head. It also outputs its value
-\begin{figure}[H]
-	\centering
-	\includegraphics[scale=0.5]{DLShow1.jpg}
-	\caption{Creating temp pointer and outputting first value}
-\end{figure} ~\\
-It updates the temp pointer and moves to the next node. Then it outputs the value of the node pointed by temp.
-\begin{figure}[H]
-	\centering
-	\includegraphics[scale=0.5]{DLShow2.jpg}
-	\caption{Outputting second value}
-\end{figure}
-\newpage
-And finally it moves to the last node, outputs its value and since it's next is equal to NULL, the loop is ended.
-\begin{figure}[H]
-	\centering
-	\includegraphics[scale=0.5]{DLShow3.jpg}
-	\caption{Outputting third value}
-\end{figure} ~\\
-\end{example}
-\newpage
-\section{Problems}\index{Problems}
-\begin{problem}
-	Implement the Remove(int index) function in your DLList class. The function should remove the element from the given index and returns the removed element. The function should run in O(min(i, n - i)).
-	\paragraph{Instructions}
-	\begin{itemize}
-		\item Think for all special cases such as, removal at zero index and removal at last index.
-		\item Update pointers carefully.
-		\item Try to take an idea from given Add() function for traversal.
-	\end{itemize}
-\end{problem}
-~\\
-\begin{problem}
-	Implement the function Reverse() which reverses the list, without making a new list.
-	\paragraph{Instructions}
-	\begin{itemize}
-		\item Traverse through the whole list and update its pointers accordingly
-	\end{itemize}
-\end{problem}
-
  \newpage
  \section{Student Feedback}
  \textbf{What did you learn from this lab?}\\ 
@@ -2742,8 +2710,48 @@ And finally it moves to the last node, outputs its value and since it's next is 
  \framebox(400,150){}\\
  \textbf{What can be improved in this lab?}\\ 
  \framebox(400,150){}\\
- 
- \newpage
+
+\newpage
+%---------------------------------------------------
+
+\chapterimage{chapter_head_2.pdf} % Chapter heading image
+
+\chapter{Brainstorming and Design \hspace{14mm} {\textsc{\small SCRIPTED BY: UMAIR AZFAR}}}
+
+\section{Making Project Groups}\index{Making Project Groups}
+
+By this time, you should have made project groups. Your group should have 3 to 4 members so that the amount of work can be distributed evenly among your group members. Choose your group members wisely as they are the key in completing your project.\\
+
+\noindent In this lab, you should sit with your project group members as you will be working with each other in performing various tasks. You will work together in coming up with a project idea after your brain storming session.
+
+\section{Brain Storming}\index{Brain Storming}
+
+You will take 15 minutes in coming up with your own original game/application idea that you will work on as your final project for this course. You should take your pen and paper out and write about your project idea individually. The important points that you must follow in coming up with your idea are given as follows:
+~\\
+\begin{itemize}
+	\item The idea should be about some local context
+	\item The idea should contain many objects that interact with each other
+	\item The objects should be inherited from each other
+	\item If making a game, avoid making games that are top-down shooting games or side scrolling shooting games.
+	\item Avoid making games like breakout as they have been done many times before
+\end{itemize}
+~\\
+\noindent Once your 15 minutes are over, take another 15 minutes to discuss your idea with your teammates and select one idea by the end of the 15 minutes.The next 30 minutes will be spent in coming up with the features of your game/application that you think your project must have. For example, if you are making a game, you need to decide on how the menu screen will look like, what options will the user be able to change. What will the player be doing, what enemies will the player encounter, what objects will be there for interaction, what level will be there and how they will change, etc.
+~\\
+\noindent For the next 30 minutes, all the groups will present their idea in 5 minutes to the entire class and will receive feedback. They will note down the feedback to further enhance their idea and arrive at a set of features that they think they should be adding to their project.
+
+\section{Design}\index{Design}
+This is where your UML 2.0 skills will come in handy. The time you are left with will be spent in you coming up with a good design for your project. You will need to decide the number of objects that your application will have and what will be the relationships between the many classes that you will define. You also need to think about the attributes and the functions that the classes will have. This will be a rough start for your Assignment\#6 so you need to pay special attention to it. Over the course of coming weeks till you need to submit Assignment\#6 you will need to meet your instructor and come up with a worthwhile plan. You will also need to distribute the tasks among your group members and convey that to your instructor. You will initially make your UML diagrams by pen and paper, but later redraw them using \path{UMLet}.
+
+\newpage
+\section{Student Feedback}
+\textbf{What did you learn from this lab?}\\ 
+\framebox(400,150){}\\
+\textbf{What part of the lab is still unclear to you?}\\
+\framebox(400,150){}\\
+\textbf{What can be improved in this lab?}\\ 
+\framebox(400,150){}\\
+
  \chapterimage{chapter_head_2.pdf} % Chapter heading image
  %----------------------------------------------------------------------------------------
  
@@ -2949,10 +2957,6 @@ int main()  {
 \textbf{What can be improved in this lab?}\\ 
 \framebox(400,150){}\\
 
-\newpage
-\pagestyle{empty} % No headers
-
-\cleardoublepage % Forces the first chapter to start on an odd page so it's on the right
 
 \pagestyle{fancy} % Print headers again
 
